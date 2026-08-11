@@ -3,19 +3,776 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конвертер файлов</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>🔄 Конвертер файлов — 22 формата</title>
+    <style>
+        /* ==================== ГЛОБАЛЬНЫЕ СТИЛИ ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        /* ==================== ЗАГОЛОВОК ==================== */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .badge {
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: 0.3px;
+        }
+
+        .badge.image { background: #e3f2fd; color: #1565c0; }
+        .badge.document { background: #e8f5e9; color: #2e7d32; }
+        .badge.spreadsheet { background: #fff3e0; color: #e65100; }
+        .badge.presentation { background: #fce4ec; color: #c62828; }
+
+        /* ==================== ОБЛАСТЬ ЗАГРУЗКИ ==================== */
+        .upload-area {
+            border: 2px dashed #d0d0d0;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f5f3ff;
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #ede7f6;
+            transform: scale(1.02);
+        }
+
+        .upload-area .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .upload-area .text {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .upload-area .text .browse {
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .upload-area .hint {
+            font-size: 13px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .upload-area .formats-hint {
+            font-size: 11px;
+            color: #bbb;
+            margin-top: 12px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* ==================== ИНФОРМАЦИЯ О ФАЙЛЕ ==================== */
+        .file-info {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            border-left: 4px solid #667eea;
+        }
+
+        .file-info.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-info .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 14px;
+        }
+
+        .file-info .label {
+            color: #888;
+        }
+
+        .file-info .value {
+            color: #1a1a2e;
+            font-weight: 500;
+        }
+
+        .file-info .value.format {
+            background: #667eea;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* ==================== ВЫБОР ФОРМАТА ==================== */
+        .options {
+            margin-top: 16px;
+            display: none;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .options.active {
+            display: flex;
+            animation: slideDown 0.3s ease;
+        }
+
+        .options label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .options select {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            min-width: 120px;
+        }
+
+        .options select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* ==================== КНОПКА КОНВЕРТАЦИИ ==================== */
+        .convert-btn {
+            display: none;
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .convert-btn.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .convert-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .convert-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .convert-btn.loading .spinner {
+            display: block;
+        }
+
+        .convert-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==================== ПРОГРЕСС ==================== */
+        .progress-container {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            width: 0%;
+            animation: progressAnim 2s ease-in-out infinite;
+        }
+
+        @keyframes progressAnim {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        /* ==================== СТАТУС ==================== */
+        .status {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status.active {
+            display: flex;
+            animation: slideDown 0.3s ease;
+        }
+
+        .status.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .status.success {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .status.error {
+            background: #fbe9e7;
+            color: #b71c1c;
+        }
+
+        .status .icon {
+            font-size: 20px;
+        }
+
+        /* ==================== РЕЗУЛЬТАТ ==================== */
+        .result {
+            display: none;
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #4caf50;
+        }
+
+        .result.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .result .success-icon {
+            font-size: 40px;
+        }
+
+        .result .message {
+            font-weight: 600;
+            color: #1b5e20;
+            margin-top: 4px;
+        }
+
+        /* ==================== АДАПТИВНОСТЬ ==================== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .upload-area {
+                padding: 24px 16px;
+            }
+
+            .options {
+                flex-direction: column;
+            }
+
+            .options select {
+                width: 100%;
+            }
+
+            .file-info .row {
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔄 Конвертер файлов</h1>
-        <p class="subtitle">Поддерживается 22 формата: изображения, документы, таблицы, презентации</p>
-        
-        <div class="converter-wrapper">
-            <!-- Здесь будет интерфейс, создаваемый JS -->
+
+<div class="container">
+    <!-- ==================== ЗАГОЛОВОК ==================== -->
+    <div class="header">
+        <h1>🔄 <span>Конвертер файлов</span></h1>
+        <p class="subtitle">Поддерживается <strong>22 формата</strong>: изображения, документы, таблицы, презентации</p>
+        <div class="badges">
+            <span class="badge image">🖼️ Изображения</span>
+            <span class="badge document">📄 Документы</span>
+            <span class="badge spreadsheet">📊 Таблицы</span>
+            <span class="badge presentation">📽️ Презентации</span>
         </div>
     </div>
-    
-    <script src="js/convert-page.js"></script>
+
+    <!-- ==================== ОБЛАСТЬ ЗАГРУЗКИ ==================== -->
+    <div class="upload-area" id="uploadArea">
+        <span class="icon">📁</span>
+        <p class="text">
+            Перетащите файл сюда или <span class="browse">выберите файл</span>
+        </p>
+        <p class="hint">Максимальный размер: 100 МБ</p>
+        <p class="formats-hint">
+            Поддерживаемые форматы: PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP, ICO, SVG, HEIC,
+            PDF, DOC, DOCX, ODT, RTF, TXT, XLS, XLSX, ODS, CSV, PPT, PPTX, ODP
+        </p>
+        <input type="file" id="fileInput">
+    </div>
+
+    <!-- ==================== ИНФОРМАЦИЯ О ФАЙЛЕ ==================== -->
+    <div class="file-info" id="fileInfo">
+        <div class="row">
+            <span class="label">📎 Имя файла</span>
+            <span class="value" id="fileName">—</span>
+        </div>
+        <div class="row">
+            <span class="label">📦 Размер</span>
+            <span class="value" id="fileSize">—</span>
+        </div>
+        <div class="row">
+            <span class="label">🔤 Формат</span>
+            <span class="value format" id="fileFormat">—</span>
+        </div>
+    </div>
+
+    <!-- ==================== ВЫБОР ВЫХОДНОГО ФОРМАТА ==================== -->
+    <div class="options" id="options">
+        <label for="outputFormat">🎯 Выходной формат:</label>
+        <select id="outputFormat">
+            <option value="">Выберите формат...</option>
+        </select>
+    </div>
+
+    <!-- ==================== КНОПКА КОНВЕРТАЦИИ ==================== -->
+    <button class="convert-btn" id="convertBtn">
+        <span class="btn-text">⚡ Конвертировать</span>
+        <span class="spinner"></span>
+    </button>
+
+    <!-- ==================== ПРОГРЕСС ==================== -->
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar">
+            <div class="fill"></div>
+        </div>
+        <p class="progress-text">⏳ Идёт конвертация...</p>
+    </div>
+
+    <!-- ==================== СТАТУС ==================== -->
+    <div class="status" id="status">
+        <span class="icon"></span>
+        <span class="message"></span>
+    </div>
+
+    <!-- ==================== РЕЗУЛЬТАТ ==================== -->
+    <div class="result" id="result">
+        <div class="success-icon">✅</div>
+        <p class="message">Файл успешно сконвертирован!</p>
+        <p style="font-size:13px;color:#888;margin-top:4px;">Скачивание началось автоматически</p>
+    </div>
+</div>
+
+<!-- ==================== СКРИПТ ==================== -->
+<script>
+    // ==================== КОНФИГУРАЦИЯ ====================
+    const API_URL = 'http://localhost:5000';  // Для локальной разработки
+    // const API_URL = 'https://convertfuctions.onrender.com';  // Для продакшена
+
+    // ==================== ПОДДЕРЖИВАЕМЫЕ ФОРМАТЫ ====================
+    const FORMATS = {
+        image: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'webp', 'ico', 'svg', 'heic'],
+        document: ['pdf', 'doc', 'docx', 'odt', 'rtf', 'txt'],
+        spreadsheet: ['xls', 'xlsx', 'ods', 'csv'],
+        presentation: ['ppt', 'pptx', 'odp']
+    };
+
+    const ALL_FORMATS = [...FORMATS.image, ...FORMATS.document, ...FORMATS.spreadsheet, ...FORMATS.presentation];
+
+    // ==================== МАТРИЦА КОНВЕРТАЦИЙ ====================
+    function getConversionType(input, output) {
+        input = input.toLowerCase();
+        output = output.toLowerCase();
+
+        // Изображение → Изображение
+        if (FORMATS.image.includes(input) && FORMATS.image.includes(output)) return 'image_to_image';
+        // Изображение → PDF
+        if (FORMATS.image.includes(input) && output === 'pdf') return 'image_to_pdf';
+        // PDF → Изображение
+        if (input === 'pdf' && FORMATS.image.includes(output)) return 'pdf_to_image';
+        // PDF → Текст
+        if (input === 'pdf' && output === 'txt') return 'pdf_to_text';
+        // PDF → SVG
+        if (input === 'pdf' && output === 'svg') return 'pdf_to_svg';
+        // PDF → PDF (сжатие)
+        if (input === 'pdf' && output === 'pdf') return 'pdf_to_pdf';
+        // Документ → PDF
+        if (['doc', 'docx', 'odt', 'rtf'].includes(input) && output === 'pdf') return 'document_to_pdf';
+        // Документ → Документ
+        if (['doc', 'docx', 'odt', 'rtf'].includes(input) && ['doc', 'docx', 'odt', 'rtf'].includes(output)) return 'document_to_document';
+        // Таблица → PDF
+        if (FORMATS.spreadsheet.includes(input) && output === 'pdf') return 'spreadsheet_to_pdf';
+        // Таблица → CSV
+        if (['xls', 'xlsx', 'ods'].includes(input) && output === 'csv') return 'spreadsheet_to_csv';
+        // CSV → Таблица
+        if (input === 'csv' && ['xls', 'xlsx', 'ods'].includes(output)) return 'csv_to_spreadsheet';
+        // Презентация → PDF
+        if (FORMATS.presentation.includes(input) && output === 'pdf') return 'presentation_to_pdf';
+        // Презентация → Изображение
+        if (FORMATS.presentation.includes(input) && FORMATS.image.includes(output)) return 'presentation_to_image';
+
+        return null;
+    }
+
+    function getOutputFormats(input) {
+        input = input.toLowerCase();
+        if (!ALL_FORMATS.includes(input)) return [];
+        const result = new Set();
+        ALL_FORMATS.forEach(output => {
+            if (getConversionType(input, output)) result.add(output);
+        });
+        if (!result.has(input)) result.add(input);
+        return Array.from(result);
+    }
+
+    // ==================== ОСНОВНАЯ ЛОГИКА ====================
+    async function convertFile(file, inputFormat, outputFormat) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const base64 = e.target.result.split(',')[1];
+                    const response = await fetch(`${API_URL}/api/convert`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            inputFormat, outputFormat,
+                            fileContent: base64,
+                            fileName: file.name
+                        })
+                    });
+                    if (!response.ok) {
+                        const error = await response.json();
+                        reject(new Error(error.error || 'Ошибка конвертации'));
+                        return;
+                    }
+                    resolve(await response.blob());
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ==================== UI ЭЛЕМЕНТЫ ====================
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileFormat = document.getElementById('fileFormat');
+    const options = document.getElementById('options');
+    const outputSelect = document.getElementById('outputFormat');
+    const convertBtn = document.getElementById('convertBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const status = document.getElementById('status');
+    const result = document.getElementById('result');
+
+    let selectedFile = null;
+    let selectedFormat = '';
+
+    // ==================== СОБЫТИЯ ====================
+    // Клик по области загрузки
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // Drag & Drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    // Выбор файла
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    // Конвертация
+    convertBtn.addEventListener('click', handleConvert);
+
+    // ==================== ОБРАБОТЧИК ФАЙЛА ====================
+    function handleFile(file) {
+        const extension = file.name.split('.').pop().toLowerCase();
+
+        if (!ALL_FORMATS.includes(extension)) {
+            showStatus(`❌ Формат "${extension}" не поддерживается`, 'error');
+            return;
+        }
+
+        selectedFile = file;
+        selectedFormat = extension;
+
+        // Показываем информацию о файле
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileFormat.textContent = extension.toUpperCase();
+        fileInfo.classList.add('active');
+
+        // Заполняем выходные форматы
+        const outputs = getOutputFormats(extension);
+        outputSelect.innerHTML = '';
+        outputs.forEach(format => {
+            const option = document.createElement('option');
+            option.value = format;
+            option.textContent = format.toUpperCase();
+            outputSelect.appendChild(option);
+        });
+
+        options.classList.add('active');
+        convertBtn.classList.add('active');
+        convertBtn.disabled = false;
+        convertBtn.querySelector('.btn-text').textContent = '⚡ Конвертировать';
+        convertBtn.classList.remove('loading');
+
+        hideStatus();
+        result.classList.remove('active');
+        progressContainer.classList.remove('active');
+
+        showStatus(`✅ Файл "${file.name}" готов к конвертации`, 'info');
+    }
+
+    // ==================== КОНВЕРТАЦИЯ ====================
+    async function handleConvert() {
+        if (!selectedFile) {
+            showStatus('❌ Выберите файл', 'error');
+            return;
+        }
+
+        const inputFormat = selectedFormat;
+        const outputFormat = outputSelect.value;
+
+        if (!outputFormat) {
+            showStatus('❌ Выберите выходной формат', 'error');
+            return;
+        }
+
+        if (!getConversionType(inputFormat, outputFormat)) {
+            showStatus(`❌ Конвертация из ${inputFormat} в ${outputFormat} не поддерживается`, 'error');
+            return;
+        }
+
+        // Блокируем кнопку
+        convertBtn.disabled = true;
+        convertBtn.classList.add('loading');
+        progressContainer.classList.add('active');
+        hideStatus();
+        result.classList.remove('active');
+
+        try {
+            const blob = await convertFile(selectedFile, inputFormat, outputFormat);
+
+            // Скачивание
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `converted_${Date.now()}.${outputFormat}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Показываем результат
+            result.classList.add('active');
+            showStatus('✅ Конвертация успешно завершена!', 'success');
+
+        } catch (error) {
+            showStatus(`❌ Ошибка: ${error.message}`, 'error');
+        } finally {
+            convertBtn.disabled = false;
+            convertBtn.classList.remove('loading');
+            progressContainer.classList.remove('active');
+            convertBtn.querySelector('.btn-text').textContent = '⚡ Конвертировать';
+        }
+    }
+
+    // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+    function showStatus(text, type = 'info') {
+        status.className = `status active ${type}`;
+        const iconMap = {
+            info: 'ℹ️',
+            success: '✅',
+            error: '❌'
+        };
+        status.querySelector('.icon').textContent = iconMap[type] || 'ℹ️';
+        status.querySelector('.message').textContent = text;
+    }
+
+    function hideStatus() {
+        status.className = 'status';
+        status.querySelector('.icon').textContent = '';
+        status.querySelector('.message').textContent = '';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Байт';
+        const k = 1024;
+        const sizes = ['Байт', 'КБ', 'МБ', 'ГБ'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // ==================== ПРОВЕРКА API ====================
+    async function checkAPI() {
+        try {
+            const response = await fetch(`${API_URL}/api/health`);
+            if (response.ok) {
+                console.log('✅ API доступен');
+            } else {
+                console.warn('⚠️ API недоступен');
+            }
+        } catch (error) {
+            console.warn('⚠️ API недоступен:', error.message);
+        }
+    }
+
+    checkAPI();
+</script>
+
 </body>
 </html>
