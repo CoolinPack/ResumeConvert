@@ -44,12 +44,15 @@ function getConversionType(input, output) {
 function isImage(f) {
     return ['png','jpg','jpeg','gif','bmp','tiff','webp','ico','svg','heic'].includes(f);
 }
+
 function isDocument(f) {
     return ['pdf','doc','docx','odt','rtf','txt'].includes(f);
 }
+
 function isSpreadsheet(f) {
     return ['xls','xlsx','ods','csv'].includes(f);
 }
+
 function isPresentation(f) {
     return ['ppt','pptx','odp'].includes(f);
 }
@@ -101,11 +104,12 @@ async function convertFile(file, inputFormat, outputFormat) {
 }
 
 // ============================================================
-// UI — НИЧЕГО НЕ МЕНЯЕМ, ПРОСТО ДОБАВЛЯЕМ ЛОГИКУ
+// UI ЛОГИКА
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    // === ЭЛЕМЕНТЫ ===
     var dropZone = document.getElementById('dropZone');
     var fileInput = document.getElementById('fileInput');
     var fileInfo = document.getElementById('fileInfo');
@@ -118,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var resultBox = document.getElementById('resultBox');
     var resultMessage = document.getElementById('resultMessage');
     var resultMeta = document.getElementById('resultMeta');
-    var downloadBtn = document.getElementById('downloadConvertedBtn');
+    var downloadBtn = document.getElementById('downloadBtn');
 
     var selectedFile = null;
     var convertedBlob = null;
@@ -138,63 +142,128 @@ document.addEventListener('DOMContentLoaded', function() {
         var ext = file.name.split('.').pop().toLowerCase();
 
         if (!ALL_FORMATS.includes(ext)) {
-            alert('Формат "' + ext + '" не поддерживается');
+            alert('Формат "' + ext + '" не поддерживается. Доступные форматы: ' + ALL_FORMATS.join(', '));
             return;
         }
 
         selectedFile = file;
         fileName.textContent = file.name;
         fileSize.textContent = formatFileSize(file.size);
+        fileInfo.classList.add('active');
         fileInfo.style.display = 'block';
         fromSelect.value = ext;
+
+        // Обновляем выходные форматы
+        var outputs = getOutputFormats(ext);
+        var currentTo = toSelect.value;
+        toSelect.innerHTML = '';
+        outputs.forEach(function(f) {
+            var opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f.toUpperCase();
+            toSelect.appendChild(opt);
+        });
+        if (currentTo && outputs.indexOf(currentTo) !== -1) {
+            toSelect.value = currentTo;
+        } else if (outputs.length) {
+            toSelect.value = outputs[0];
+        }
+
         convertBtn.disabled = false;
+        resultBox.classList.remove('active');
         resultBox.style.display = 'none';
         convertedBlob = null;
         convertedFileName = null;
+        document.getElementById('filePreview').classList.remove('active');
         document.getElementById('filePreview').style.display = 'none';
     }
 
     function removeFile() {
         selectedFile = null;
+        fileInfo.classList.remove('active');
         fileInfo.style.display = 'none';
         convertBtn.disabled = true;
+        resultBox.classList.remove('active');
         resultBox.style.display = 'none';
         convertedBlob = null;
         convertedFileName = null;
         fileInput.value = '';
+        document.getElementById('filePreview').classList.remove('active');
         document.getElementById('filePreview').style.display = 'none';
     }
 
     // === СОБЫТИЯ ===
 
-    dropZone.addEventListener('click', function() {
+    // 1. Клик по зоне загрузки — открываем диалог
+    dropZone.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         fileInput.click();
     });
 
+    // 2. Кнопка "+" внутри зоны — тоже должна работать
+    var dropIcon = dropZone.querySelector('.drop-icon');
+    if (dropIcon) {
+        dropIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.click();
+        });
+    }
+
+    // 3. Выбор файла через диалог
     fileInput.addEventListener('change', function(e) {
-        if (e.target.files.length) {
+        if (e.target.files && e.target.files.length > 0) {
             handleFile(e.target.files[0]);
         }
     });
 
+    // 4. Drag & Drop
     dropZone.addEventListener('dragover', function(e) {
         e.preventDefault();
         dropZone.classList.add('dragover');
     });
 
-    dropZone.addEventListener('dragleave', function() {
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
         dropZone.classList.remove('dragover');
     });
 
     dropZone.addEventListener('drop', function(e) {
         e.preventDefault();
         dropZone.classList.remove('dragover');
-        if (e.dataTransfer.files.length) {
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             handleFile(e.dataTransfer.files[0]);
         }
     });
 
-    removeFileBtn.addEventListener('click', removeFile);
+    // 5. Удаление файла
+    removeFileBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        removeFile();
+    });
+
+    // 6. Смена входного формата
+    fromSelect.addEventListener('change', function() {
+        if (selectedFile) {
+            var ext = selectedFile.name.split('.').pop().toLowerCase();
+            var newFrom = this.value;
+            var outputs = getOutputFormats(newFrom);
+            var currentTo = toSelect.value;
+            toSelect.innerHTML = '';
+            outputs.forEach(function(f) {
+                var opt = document.createElement('option');
+                opt.value = f;
+                opt.textContent = f.toUpperCase();
+                toSelect.appendChild(opt);
+            });
+            if (currentTo && outputs.indexOf(currentTo) !== -1) {
+                toSelect.value = currentTo;
+            } else if (outputs.length) {
+                toSelect.value = outputs[0];
+            }
+        }
+    });
 
     // === КОНВЕРТАЦИЯ ===
 
@@ -208,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var outputFormat = toSelect.value;
 
         if (!inputFormat || !outputFormat) {
-            alert('Выберите формат');
+            alert('Выберите входной и выходной формат');
             return;
         }
 
@@ -217,8 +286,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Блокируем кнопку
         convertBtn.disabled = true;
         convertBtn.textContent = 'Конвертация...';
+        convertBtn.classList.add('loading');
+        resultBox.classList.remove('active');
         resultBox.style.display = 'none';
         convertedBlob = null;
         convertedFileName = null;
@@ -228,23 +300,28 @@ document.addEventListener('DOMContentLoaded', function() {
             convertedBlob = blob;
             convertedFileName = 'converted.' + outputFormat;
 
+            resultBox.classList.add('active');
             resultBox.style.display = 'block';
             resultMessage.textContent = '✅ Конвертация успешно завершена!';
-            resultMeta.textContent = 'Файл: ' + selectedFile.name + ' → ' + outputFormat.toUpperCase();
+            resultMeta.textContent = selectedFile.name + ' → ' + outputFormat.toUpperCase();
+            downloadBtn.disabled = false;
 
         } catch (error) {
+            resultBox.classList.add('active');
             resultBox.style.display = 'block';
             resultMessage.textContent = '❌ Ошибка: ' + error.message;
             resultMeta.textContent = 'Попробуйте другой файл или формат';
+            downloadBtn.disabled = true;
         } finally {
             convertBtn.disabled = false;
             convertBtn.textContent = 'Конвертировать';
+            convertBtn.classList.remove('loading');
         }
     });
 
     // === СКАЧИВАНИЕ ===
 
-    function downloadResult() {
+    downloadBtn.addEventListener('click', function() {
         if (!convertedBlob) {
             alert('Сначала сконвертируйте файл');
             return;
@@ -257,24 +334,30 @@ document.addEventListener('DOMContentLoaded', function() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    }
-
-    downloadBtn.addEventListener('click', downloadResult);
+    });
 
     // === ПРОВЕРКА API ===
 
     async function checkAPI() {
         try {
             var response = await fetch(API_URL + '/api/health');
-            if (!response.ok) {
+            if (response.ok) {
+                console.log('✅ API доступен');
+            } else {
+                console.warn('⚠️ API недоступен');
+                resultBox.classList.add('active');
                 resultBox.style.display = 'block';
                 resultMessage.textContent = '⚠️ Сервер конвертации недоступен';
                 resultMeta.textContent = 'Запустите бэкенд: python app.py';
+                downloadBtn.disabled = true;
             }
         } catch (error) {
+            console.warn('⚠️ API недоступен:', error.message);
+            resultBox.classList.add('active');
             resultBox.style.display = 'block';
             resultMessage.textContent = '⚠️ Сервер конвертации недоступен';
             resultMeta.textContent = 'Запустите бэкенд: python app.py';
+            downloadBtn.disabled = true;
         }
     }
 
