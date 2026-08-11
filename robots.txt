@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Replace this line with the real production domain after Vercel deployment.
+# Sitemap: https://YOUR-DOMAIN.vercel.app/sitemap.xml

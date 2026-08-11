@@ -1,0 +1,199 @@
+/* ===== РЕКЛАМНЫЕ БАННЕРЫ ===== */
+.ad-banner {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.ad-content {
+    background: #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem;
+    position: relative;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ad-placeholder {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1.1rem;
+    width: 100%;
+}
+
+.ad-placeholder p {
+    margin: 0;
+}
+
+.ad-label {
+    position: absolute;
+    top: 0.5rem;
+    left: 1rem;
+    font-size: 0.7rem;
+    color: #6b7280;
+    background: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+}
+
+.ad-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.ad-close:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+/* Рекламный баннер с изображением */
+.ad-banner-image {
+    width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* ===== РЕКЛАМНОЕ ВИДЕО В МОДАЛКЕ ===== */
+.ad-video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.ad-video-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+}
+
+.ad-video-content h3 {
+    margin-top: 0;
+    color: #1f2937;
+}
+
+.ad-video-container {
+    margin: 1.5rem 0;
+}
+
+.ad-video-player {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 1rem;
+    position: relative;
+}
+
+.ad-video-thumbnail {
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    position: relative;
+}
+
+.ad-play-icon {
+    font-size: 4rem;
+    color: white;
+    opacity: 0.8;
+}
+
+.ad-timer {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.ad-progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.ad-progress-fill {
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.1s linear;
+}
+
+.btn-skip-ad {
+    margin-top: 1rem;
+    padding: 0.8rem 2rem;
+    border: 2px solid #2563eb;
+    border-radius: 50px;
+    background: transparent;
+    color: #2563eb;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-skip-ad:hover:not(:disabled) {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-skip-ad:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ad-close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+/* Анимации для рекламы */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.ad-loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+body.ad-modal-open{overflow:hidden}
+.ad-banner{max-width:1200px;margin:18px auto;padding:0 24px}
+.ad-content{min-height:88px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ad-label{position:absolute;top:8px;left:12px;font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px}
+.ad-placeholder{text-align:center;color:rgba(255,255,255,.42);font-size:12px}.ad-placeholder strong{display:block;color:rgba(255,255,255,.65);margin-bottom:4px}.ad-placeholder p{margin:0}
+.ad-video-modal[hidden]{display:none}.ad-video-content{position:relative;max-width:760px;width:min(92vw,760px);padding:24px;background:#fff;border-radius:20px;color:#111827;box-shadow:0 25px 100px rgba(0,0,0,.45)}
+.ad-video-content h3{margin:0 0 6px;color:#111827}.ad-video-copy{margin:0;color:#64748b;font-size:13px}.ad-video-container{margin-top:16px;background:#0f172a;border-radius:12px;overflow:hidden}.ad-video-player{display:block;width:100%;max-height:430px;background:#0f172a}.ad-timer{font-size:12px;color:#64748b;text-align:right;margin-top:8px}.ad-progress-bar{height:4px;background:#e5e7eb;border-radius:99px;overflow:hidden}.ad-progress-fill{height:100%;width:0;background:#6c63ff;transition:width .1s linear}.btn-skip-ad{display:block;margin:14px auto 0;padding:10px 22px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#334155;font-weight:700;cursor:pointer}.btn-skip-ad:disabled{opacity:.45;cursor:not-allowed}.ad-close-modal{position:absolute;right:12px;top:10px;border:0;background:transparent;color:#64748b;font-size:26px;cursor:pointer;z-index:2}
+@media(max-width:700px){.ad-banner{padding:0 12px}.ad-content{min-height:72px}.ad-video-content{padding:18px}}
+.ad-close-modal:disabled{opacity:.35;cursor:not-allowed}

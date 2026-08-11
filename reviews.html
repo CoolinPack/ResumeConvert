@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Отзывы — NextResume</title><link rel="icon" href="assets/logo.svg" type="image/svg+xml"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/ads.css"><link rel="stylesheet" href="css/reviews.css"><script src="js/i18n.js"></script></head>
+<body><div class="bg-decoration"><div class="circle circle-1"></div><div class="circle circle-2"></div><div class="circle circle-3"></div></div>
+<header class="header"><nav class="nav"><a href="index.html" class="logo"><span class="logo-icon"><img src="assets/logo.svg" alt="NextResume"></span><span class="logo-text"><span class="main">Next<span>Resume</span></span><span class="sub">SMART RESUME BUILDER</span></span></a><ul class="nav-menu"><li><a href="index.html">Главная</a></li><li><a href="create-resume.html">Создать резюме</a></li><li><a href="convert.html">Конвертировать</a></li><li><a href="reviews.html" class="active">Отзывы</a></li></ul></nav></header>
+<main><div class="reviews-container">
+<div class="page-header"><h1>Отзывы</h1><p class="subtitle">Расскажите, что получилось хорошо и что стоит улучшить.</p></div>
+<div class="review-form-container"><h2>Оставить отзыв</h2><p class="review-note">Имя публикуется рядом с отзывом. Email нужен только для формальности и не сохраняется.</p>
+<form id="reviewForm" class="review-form">
+<div class="form-row-2"><div class="form-group"><label>Ваше имя</label><input id="reviewName" type="text" placeholder="Алексей" required></div><div class="form-group"><label>Email</label><input id="reviewEmail" type="email" placeholder="you@example.com" required></div></div>
+<div class="form-group"><label>Ваш отзыв</label><textarea id="reviewText" rows="6" placeholder="Что понравилось? Что можно сделать лучше?" required></textarea></div>
+<button class="btn-primary" type="submit">Отправить отзыв</button>
+</form></div>
+<section class="reviews-list-section"><div class="section-head"><h2>Отзывы пользователей</h2><span id="reviewCount"></span></div><div id="reviewsList"></div></section>
+</div></main><footer><p>© 2026 NextResume · Email из формы отзыва не сохраняется</p></footer>
+<script src="js/reviews.js"></script><script src="js/ads.js"></script></body></html>

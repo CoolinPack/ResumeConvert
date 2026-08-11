@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextResume — Профессиональное резюме</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/ads.css">
+    <style>
+        /* Дополнительные стили для главной */
+        .format-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            transition: all 0.4s;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .format-card:hover {
+            background: rgba(108, 99, 255, 0.05);
+            border-color: #6C63FF;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(108, 99, 255, 0.05);
+            color: #ffffff;
+        }
+        .review-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+        }
+        .review-card:hover {
+            transform: translateX(6px);
+            border-color: rgba(108, 99, 255, 0.1);
+        }
+        .review-card p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+    <link rel="stylesheet" href="css/templates.css">
+    <script src="js/templates.js" defer></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/analytics.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/ads.js" defer></script>
+</head>
+<body>
+    <!-- ДЕКОРАТИВНЫЙ ФОН -->
+    <div class="bg-decoration">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
+    <!-- ШАПКА -->
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo"><span class="logo-icon"><img src="assets/logo.svg" alt="NextResume"></span><span class="logo-text"><span class="main">Next<span>Resume</span></span><span class="sub">SMART RESUME BUILDER</span></span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Главная</a></li>
+                <li><a href="create-resume.html">Создать резюме</a></li>
+                <li><a href="convert.html">Конвертировать</a></li>
+                <li><a href="reviews.html">Отзывы</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- ГЕРОЙ -->
+            <section class="hero">
+                <h1>
+                    Создайте профессиональное<br>
+                    резюме за <span class="highlight">5 минут</span>
+                </h1>
+                <p class="subtitle">
+                    Выберите один из 7 уникальных шаблонов, заполните данные<br>
+                    и получите готовый PDF-документ для отправки работодателю
+                </p>
+                <div class="hero-buttons">
+                    <a href="create-resume.html" class="btn-primary">Начать создание</a>
+                    <a href="convert.html" class="btn-secondary">Конвертировать файл</a>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="templateCount">7</div>
+                        <div class="stat-label">уникальных шаблонов</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="pdfFormatCount">A4</div>
+                        <div class="stat-label">готовый формат PDF</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="resumeCreatedCount">0</div>
+                        <div class="stat-label">создано резюме</div>
+                    </div>
+                </div>
+                <div class="home-template-carousel" aria-label="7 resume templates" id="homeTemplateCarousel"><div class="home-template-track" id="homeTemplateTrack"></div></div>
+            </section>
+
+            <!-- КОНВЕРТАЦИЯ -->
+            <section class="conversion-section glass-card">
+                <h2>Конвертация файлов</h2>
+                <p class="sub-desc">Основные браузерные конвертации без загрузки файлов на сервер</p>
+                
+                <div class="format-grid">
+                    <div class="format-card">PNG → PDF</div><div class="format-card">JPG → PDF</div><div class="format-card">WEBP → JPG</div><div class="format-card">SVG → PNG</div><div class="format-card">TXT → PDF</div><div class="format-card">PDF → TXT</div><div class="format-card">PDF → PNG</div><div class="format-card">PNG → JPG</div>
+                </div>
+                <a href="convert.html" class="btn-primary" style="margin-top: 0.5rem;">Перейти к конвертеру</a>
+            </section>
+
+            <!-- ОТЗЫВЫ -->
+            <section class="reviews-section">
+                <h2>Отзывы пользователей</h2>
+                <div id="homeReviews" class="review-card">
+                    <p>Отзывы появятся здесь после публикации пользователями.</p>
+                </div>
+                <div style="text-align:center;margin-top:1.5rem"><a href="reviews.html" class="btn-secondary">Оставить отзыв</a></div>
+            </section>
+
+<section class="trustpilot-section glass-card" style="margin-top:24px">
+<h2>Trustpilot</h2>
+<p class="sub-desc">Отзывы с Trustpilot подключаются через официальный TrustBox после создания страницы NextResume на Trustpilot.</p>
+<div class="trustpilot-shell"><strong>Официальный Trustpilot TrustBox</strong><span>Здесь будут отображаться реальные отзывы после подключения вашего бизнес-профиля.</span><a href="https://business.trustpilot.com/features/trustbox-widgets" target="_blank" rel="noopener">Как подключить TrustBox →</a></div>
+</section>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 NextResume. Все права защищены</p>
+    </footer>
+</body>
+</html>
