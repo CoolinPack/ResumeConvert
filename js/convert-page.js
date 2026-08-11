@@ -1,11 +1,10 @@
 // ============================================================
-// КОНВЕРТЕР ФАЙЛОВ — ПОЛНОСТЬЮ РАБОЧАЯ ВЕРСИЯ
+// КОНВЕРТЕР ФАЙЛОВ — ФИНАЛЬНАЯ РАБОЧАЯ ВЕРСИЯ
 // ============================================================
 
 (function() {
     'use strict';
 
-    // === КОНФИГ ===
     var API_URL = 'http://localhost:5000';
     // var API_URL = 'https://convertfuctions.onrender.com';
 
@@ -106,12 +105,11 @@
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // === ЗАПУСК ПРИ ЗАГРУЗКЕ ===
+    // === ЗАПУСК ===
     document.addEventListener('DOMContentLoaded', function() {
 
         console.log('🔄 Конвертер запущен');
 
-        // === ПОИСК ЭЛЕМЕНТОВ ===
         var dropZone = document.getElementById('dropZone');
         var fileInput = document.getElementById('fileInput');
         var fileInfo = document.getElementById('fileInfo');
@@ -125,7 +123,6 @@
         var resultMessage = document.getElementById('resultMessage');
         var resultMeta = document.getElementById('resultMeta');
         var downloadBtn = document.getElementById('downloadBtn');
-        var controls = document.getElementById('controls');
 
         var selectedFile = null;
         var convertedBlob = null;
@@ -141,7 +138,6 @@
             }
 
             selectedFile = file;
-
             if (fileName) fileName.textContent = file.name;
             if (fileSize) fileSize.textContent = formatFileSize(file.size);
 
@@ -152,7 +148,6 @@
 
             if (fromSelect) fromSelect.value = ext;
 
-            // Обновляем выходные форматы
             var outputs = getOutputFormats(ext);
             if (toSelect) {
                 var currentTo = toSelect.value;
@@ -170,7 +165,6 @@
                 }
             }
 
-            if (controls) controls.classList.add('active');
             if (convertBtn) convertBtn.disabled = false;
 
             if (resultBox) {
@@ -191,18 +185,25 @@
                 resultBox.classList.remove('active');
                 resultBox.style.display = 'none';
             }
-            if (controls) controls.classList.remove('active');
             convertedBlob = null;
             if (fileInput) fileInput.value = '';
         }
 
-        // === СОБЫТИЯ ===
+        // === НАВЕШИВАЕМ ОБРАБОТЧИКИ ===
 
-        // Клик по зоне
-        if (dropZone) {
+        // 1. Клик по зоне загрузки — через клонирование, чтобы удалить старые обработчики
+        if (dropZone && fileInput) {
+            // Клонируем и заменяем, чтобы удалить все старые обработчики
+            var newDropZone = dropZone.cloneNode(true);
+            dropZone.parentNode.replaceChild(newDropZone, dropZone);
+            dropZone = newDropZone;
+
+            // Вешаем новый обработчик клика
             dropZone.addEventListener('click', function(e) {
                 e.preventDefault();
-                if (fileInput) fileInput.click();
+                e.stopPropagation();
+                console.log('🖱️ Клик по зоне загрузки');
+                fileInput.click();
             });
 
             // Drag & Drop
@@ -228,7 +229,7 @@
             });
         }
 
-        // Выбор файла
+        // 2. Выбор файла
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
                 if (e.target.files && e.target.files.length > 0) {
@@ -237,7 +238,7 @@
             });
         }
 
-        // Удаление
+        // 3. Удаление файла
         if (removeFileBtn) {
             removeFileBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -245,7 +246,7 @@
             });
         }
 
-        // Смена формата
+        // 4. Смена формата
         if (fromSelect) {
             fromSelect.addEventListener('change', function() {
                 var outputs = getOutputFormats(this.value);
@@ -267,7 +268,7 @@
             });
         }
 
-        // === КОНВЕРТАЦИЯ ===
+        // 5. Конвертация
         if (convertBtn) {
             convertBtn.addEventListener('click', async function() {
                 if (!selectedFile) {
@@ -324,7 +325,7 @@
             });
         }
 
-        // === СКАЧИВАНИЕ ===
+        // 6. Скачивание
         if (downloadBtn) {
             downloadBtn.addEventListener('click', function() {
                 if (!convertedBlob) {
