@@ -1,5 +1,12 @@
 {
-  "name":"nextresume-web",
-  "private":true,
-  "scripts":{"build":"node scripts/generate-sitemap.js"}
+    "name": "file-converter-frontend",
+    "version": "1.0.0",
+    "description": "Конвертер файлов 22 формата",
+    "scripts": {
+        "dev": "serve .",
+        "build": "echo 'Build complete'"
+    },
+    "devDependencies": {
+        "serve": "^14.2.0"
+    }
 }
