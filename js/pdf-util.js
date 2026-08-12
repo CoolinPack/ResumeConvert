@@ -26,7 +26,7 @@ window.NextResumePDF = (() => {
     const xref=offset;pushText(`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`);for(let i=1;i<offsets.length;i++)pushText(String(offsets[i]).padStart(10,'0')+' 00000 n \n');pushText(`trailer\n<< /Size ${objects.length+1} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`);
     return new Blob(chunks,{type:'application/pdf'});
   }
-  function canvasPage(canvas,quality=.94){ return {dataUrl:canvas.toDataURL('image/jpeg',quality),width:canvas.width,height:canvas.height}; }
+  function canvasPage(canvas,quality=.97){ return {dataUrl:canvas.toDataURL('image/jpeg',quality),width:canvas.width,height:canvas.height}; }
   async function domToPdf(element){
     const rect=element.getBoundingClientRect();
     const clone=element.cloneNode(true); clone.style.transform='none'; clone.style.margin='0'; clone.style.boxShadow='none';
