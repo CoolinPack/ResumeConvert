@@ -59,6 +59,7 @@ class ResumeTemplates {
             title: raw.desiredPosition || raw.title || 'Желаемая должность',
             email: raw.email || '',
             phone: raw.phone || '',
+            link: raw.linkUrl || raw.link || '',
             address: raw.city || raw.address || '',
             photo: raw.photo || null,
             about: raw.about || '',
@@ -100,6 +101,7 @@ class ResumeTemplates {
             data.email && `<span>✉ ${this.esc(data.email)}</span>`,
             data.phone && `<span>☎ ${this.esc(data.phone)}</span>`,
             data.address && `<span>⌖ ${this.esc(data.address)}</span>`,
+            data.link && `<span>🔗 ${this.esc(data.link.replace(/^https?:\/\//,''))}</span>`,
             data.maritalStatus && `<span>◦ ${this.esc(data.maritalStatus)}</span>`
         ].filter(Boolean);
         return items.length ? `<div class="r-contact ${variant}">${items.join('')}</div>` : '';
