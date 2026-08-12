@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             phone: $('phone')?.value.trim() || '',
             email: $('email')?.value.trim() || '',
             city: $('city')?.value.trim() || '',
+            linkUrl: $('linkUrl')?.value.trim() || '',
             relocation: $('relocation')?.value || '',
             businessTrips: $('businessTrips')?.value || '',
             maritalStatus: $('maritalStatus')?.value || '',
@@ -281,21 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!hasResumeData(data)) { notify('Добавьте данные для резюме.', 'error'); return; }
         submitBtn.disabled=true; submitBtn.textContent='Подготовка PDF…';
         try {
-            // Server-side HTML → PDF keeps text/vector layout sharp and avoids canvas/black-PDF issues.
-            updatePreview();
-            await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-            const sheet=preview.querySelector('.resume-sheet');
-            if(!sheet) throw new Error('Не удалось подготовить шаблон резюме.');
-            const res=await fetch('/api/resume/pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({html:sheet.outerHTML})});
-            if(!res.ok){let msg='Сервер не смог создать PDF.';try{const j=await res.json();msg=j.detail||msg}catch{}throw new Error(msg+' Убедитесь, что NextResume запущен через start.bat или start.sh.');}
-            const blob=await res.blob();
+            // Client-side canvas PDF generation — no server round-trip, works everywhere the site is hosted.
+            const blob=await NextResumeResumePDF.generate(data);
             if(!blob || blob.size<1000) throw new Error('PDF получился пустым.');
-            const head=new Uint8Array(await blob.slice(0,5).arrayBuffer());
-            if(String.fromCharCode(...head)!=='%PDF-') throw new Error('Сервер вернул некорректный PDF.');
             const url=URL.createObjectURL(blob), a=document.createElement('a');
             const safe=(s)=>String(s||'resume').replace(/[\\/:*?"<>|]+/g,'_').trim()||'resume';
-            a.href=url; a.download=`${safe(data.lastName)}_${safe(data.firstName)}_NextResume.pdf`; document.body.appendChild(a); a.click(); a.remove();
-            setTimeout(()=>URL.revokeObjectURL(url),3000); if (analytics?.trackDownload) analytics.trackDownload('pdf'); notify('PDF готов — текст и шаблон сохранены в A4 без canvas-сжатия.');
+            a.href=url; a.download=`${safe(data.lastName)}_${safe(data.firstName)}_ДалееResume.pdf`; document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(()=>URL.revokeObjectURL(url),3000); if (analytics?.trackDownload) analytics.trackDownload('pdf'); notify('PDF готов и скачан.');
         } catch(error) { console.error(error); notify(error.message || 'Не удалось создать PDF. Попробуйте ещё раз.', 'error'); }
         finally { submitBtn.disabled=false; submitBtn.textContent='↓  Скачать PDF'; }
     }
